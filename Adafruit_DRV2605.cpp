@@ -12,6 +12,9 @@
 
   Written by Limor Fried/Ladyada for Adafruit Industries.
   MIT license, all text above must be included in any redistribution
+  
+  Modded by Jayson Owens/ja450n to include TinyWire support for ATtiny Boards
+  
  ****************************************************/
 
 
@@ -21,7 +24,11 @@
  #include "WProgram.h"
 #endif
 
-#include <Wire.h>
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+	#include <TinyWireM.h>
+#else  
+	#include <Wire.h>
+#endif
 
 #include <Adafruit_DRV2605.h>
 
@@ -41,9 +48,15 @@ Adafruit_DRV2605::Adafruit_DRV2605() {
 */
 /**************************************************************************/
 boolean Adafruit_DRV2605::begin() {
-  Wire.begin();
+  
+  #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+  	TinyWireM.begin();
+	#else
+		Wire.begin();
+	#endif
+	
   uint8_t id = readRegister8(DRV2605_REG_STATUS);
-  Serial.print("Status 0x"); Serial.println(id, HEX);
+  // Serial.print("Status 0x"); Serial.println(id, HEX);
   
   writeRegister8(DRV2605_REG_MODE, 0x00); // out of standby
   
@@ -89,15 +102,25 @@ void Adafruit_DRV2605::setMode(uint8_t mode) {
 /********************************************************************/
 
 uint8_t Adafruit_DRV2605::readRegister8(uint8_t reg) {
-  uint8_t x ;
-   // use i2c
-    Wire.beginTransmission(DRV2605_ADDR);
-    Wire.write((byte)reg);
-    Wire.endTransmission();
-    Wire.beginTransmission(DRV2605_ADDR);
-    Wire.requestFrom((byte)DRV2605_ADDR, (byte)1);
-    x = Wire.read();
-    Wire.endTransmission();
+	uint8_t x ;
+	// use i2c
+	 	#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+	 	  TinyWireM.beginTransmission(DRV2605_ADDR);
+    	TinyWireM.write((byte)reg);
+    	TinyWireM.endTransmission();
+    	TinyWireM.beginTransmission(DRV2605_ADDR);
+    	TinyWireM.requestFrom((byte)DRV2605_ADDR, (byte)1);
+    	x = TinyWireM.read();
+    	TinyWireM.endTransmission();
+	 	#else
+    	Wire.beginTransmission(DRV2605_ADDR);
+    	Wire.write((byte)reg);
+    	Wire.endTransmission();
+    	Wire.beginTransmission(DRV2605_ADDR);
+    	Wire.requestFrom((byte)DRV2605_ADDR, (byte)1);
+    	x = Wire.read();
+    	Wire.endTransmission();
+    #endif
 
   //  Serial.print("$"); Serial.print(reg, HEX); 
   //  Serial.print(": 0x"); Serial.println(x, HEX);
@@ -107,10 +130,17 @@ uint8_t Adafruit_DRV2605::readRegister8(uint8_t reg) {
 
 void Adafruit_DRV2605::writeRegister8(uint8_t reg, uint8_t val) {
    // use i2c
-    Wire.beginTransmission(DRV2605_ADDR);
-    Wire.write((byte)reg);
-    Wire.write((byte)val);
-    Wire.endTransmission();
+   	#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+	 	  TinyWireM.beginTransmission(DRV2605_ADDR);
+    	TinyWireM.write((byte)reg);
+    	TinyWireM.write((byte)val);
+    	TinyWireM.endTransmission();
+	 	#else
+    	Wire.beginTransmission(DRV2605_ADDR);
+    	Wire.write((byte)reg);
+    	Wire.write((byte)val);
+    	Wire.endTransmission();
+    #endif
 }
 
 /****************/

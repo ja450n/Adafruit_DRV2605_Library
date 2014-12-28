@@ -12,6 +12,9 @@
 
   Written by Limor Fried/Ladyada for Adafruit Industries.
   MIT license, all text above must be included in any redistribution
+    
+  Modded by Jayson Owens/ja450n to include TinyWire support for ATtiny Boards
+  
  ****************************************************/
 
 
@@ -21,7 +24,11 @@
  #include "WProgram.h"
 #endif
 
-#include <Wire.h>
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+	#include <TinyWireM.h>
+#else  
+	#include <Wire.h>
+#endif
 
 #define DRV2605_ADDR 0x5A
 
