@@ -105,13 +105,21 @@ uint8_t Adafruit_DRV2605::readRegister8(uint8_t reg) {
 	uint8_t x ;
 	// use i2c
 	 	#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-	 	  TinyWireM.beginTransmission(DRV2605_ADDR);
-    	TinyWireM.write((byte)reg);
-    	TinyWireM.endTransmission();
-    	TinyWireM.beginTransmission(DRV2605_ADDR);
-    	TinyWireM.requestFrom((byte)DRV2605_ADDR, (byte)1);
-    	x = TinyWireM.read();
-    	TinyWireM.endTransmission();
+	 	  // TinyWireM.beginTransmission(DRV2605_ADDR);
+    	// TinyWireM.write((byte)reg);
+    	// TinyWireM.endTransmission();
+    	// TinyWireM.beginTransmission(DRV2605_ADDR);
+    	// TinyWireM.requestFrom((byte)DRV2605_ADDR, (byte)1);
+    	// x = TinyWireM.read();
+    	// TinyWireM.endTransmission();
+    	
+  		TinyWireM.beginTransmission(DRV2605_ADDR);
+	    TinyWireM.write(reg);
+	    TinyWireM.endTransmission(false);
+	    //while (TinyWireM.requestFrom(_i2caddr, 1) != 1);
+	    TinyWireM.requestFrom(DRV2605_ADDR, 1);
+	    return ( TinyWireM.read());
+    	
 	 	#else
     	Wire.beginTransmission(DRV2605_ADDR);
     	Wire.write((byte)reg);
